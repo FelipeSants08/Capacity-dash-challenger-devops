@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="halloween">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes da Moto</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="p-8">
+<main class="container mx-auto max-w-6xl p-8 rounded-lg shadow-xl">
+    <a href="/dashboard/moto" class="btn btn-ghost mb-6">← Voltar para a Dashboard de moto</a>
+
+    <h1 class="text-4xl font-bold text-center mb-10">Detalhes da Motocicleta</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="card w-full bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-3xl">Características</h2>
+                <div class="divider"></div>
+                <p class="text-xl">
+                    <span class="font-bold">Placa:</span> <span th:text="${motorcycle.plate}"></span>
+                </p>
+                <p class="text-xl">
+                    <span class="font-bold">Modelo:</span> <span th:text="${motorcycle.model}"></span>
+                </p>
+                <p class="text-xl">
+                    <span class="font-bold">Cor:</span> <span th:text="${motorcycle.color}"></span>
+                </p>
+
+                <div th:if="${motorcycle.parkingSpace != null}">
+                    <div class="alert alert-info mt-4 shadow-lg">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <h3 class="font-bold">Informações da Vaga</h3>
+                                <div class="text-xs">
+                                    <p>Esta moto está na vaga <span th:text="${motorcycle.parkingSpace.code}" class="font-bold"></span>.</p>
+                                    <p>Departamento: <span th:text="${motorcycle.parkingSpace.department.name}"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:unless="${motorcycle.parkingSpace != null}">
+                    <div class="alert alert-warning mt-4 shadow-lg">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <div class="text-xs">
+                                <p class="font-bold">Esta moto não está em uma vaga.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card w-full bg-base-100 shadow-xl text-center">
+            <div class="card-body">
+                <h2 class="card-title justify-center text-3xl">QR Code da Moto</h2>
+                <div class="divider"></div>
+                <figure class="mt-4">
+                    <img th:src="'data:image/png;base64,' + ${base64}" alt="QR Code da motocicleta" class="mx-auto w-64 h-64" />
+                </figure>
+                <p class="text-sm text-gray-400 mt-2">Escaneie o código para gerenciar a motocicleta.</p>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

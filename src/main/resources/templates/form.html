@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="halloween" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Motocicleta - Mottu</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="p-8">
+<div class="navbar bg-base-100 rounded-lg shadow-lg mb-6">
+    <div class="flex-1">
+        <a class="btn btn-ghost text-xl" th:href="@{/dashboard}">🏍️ Dashboard Mottu</a>
+    </div>
+    <div class="flex-none gap-4">
+        <!-- Informações do Usuário -->
+        <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                <div class="w-10 rounded-full">
+                    <img th:if="${#authentication.principal.attributes.picture}"
+                         th:src="${#authentication.principal.attributes.picture}"
+                         alt="Foto do usuário" />
+                    <div th:unless="${#authentication.principal.attributes.picture}"
+                         class="bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center">
+                        <span th:text="${#authentication.principal.attributes.name?.substring(0,1)}">U</span>
+                    </div>
+                </div>
+            </div>
+            <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                <li>
+                    <div class="flex flex-col p-2">
+                        <span class="font-bold" th:text="${#authentication.principal.attributes.name}">Nome do Usuário</span>
+                        <span class="text-sm text-gray-500" th:text="${#authentication.principal.attributes.email}">email@exemplo.com</span>
+                    </div>
+                </li>
+                <li><hr class="my-1"></li>
+                <li>
+                    <a th:href="@{/logout}" class="text-error font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Sair
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Badge de Role -->
+        <div class="hidden md:flex items-center">
+            <div sec:authorize="hasAuthority('ROLE_ADMIN')" class="badge badge-primary badge-lg">ADMIN</div>
+            <div sec:authorize="hasAuthority('ROLE_USER') && !hasAuthority('ROLE_ADMIN')" class="badge badge-secondary badge-lg">USER</div>
+        </div>
+    </div>
+</div>
+<main class="container mx-auto max-w-6xl p-8 rounded-lg shadow-xl">
+    <a href="/dashboard" class="btn btn-ghost mb-6">← Voltar para a Dashboard</a>
+
+    <h1 class="text-4xl font-bold text-center mb-10">Cadastro de Motocicleta</h1>
+
+    <form action="#" th:action="@{/moto/form}" th:object="${motorcycle}" method="post" class="space-y-6">
+
+        <div class="form-control">
+            <label for="plate" class="label">
+                <span class="label-text">Placa</span>
+            </label>
+            <input type="text"
+                   id="plate"
+                   th:field="*{plate}"
+                   placeholder="Ex: ABC0A00 (7 caracteres)"
+                   maxlength="7"
+                   class="input input-bordered w-full"
+                   th:errorclass="input-error" /><div class="label">
+                <span th:if="${#fields.hasErrors('plate')}"
+                      th:errors="*{plate}"
+                      class="label-text-alt text-error font-bold">Erro de Validação</span>
+        </div>
+        </div>
+
+        <div class="form-control">
+            <label for="model" class="label">
+                <span class="label-text">Modelo</span>
+            </label>
+            <input type="text" id="model" th:field="*{model}" placeholder="Ex: Honda CB 500F" class="input input-bordered w-full" required th:errorclass="input-error"/>
+            <div class="label">
+                <span th:if="${#fields.hasErrors('model')}"
+                      th:errors="*{model}"
+                      class="label-text-alt text-error font-bold">Erro de Validação</span>
+            </div>
+        </div>
+
+        <div class="form-control">
+            <label for="color" class="label">
+                <span class="label-text">Cor</span>
+            </label>
+            <input type="text" id="color" th:field="*{color}" placeholder="Ex: Vermelha" class="input input-bordered w-full" required th:errorclass="input-error"/>
+            <div class="label">
+                <span th:if="${#fields.hasErrors('color')}"
+                      th:errors="*{color}"
+                      class="label-text-alt text-error font-bold">Erro de Validação</span>
+            </div>
+        </div>
+
+        <div class="pt-4">
+            <button type="submit" class="btn btn-primary w-full">Cadastrar Motocicleta</button>
+        </div>
+    </form>
+
+</main>
+</body>
+</html>

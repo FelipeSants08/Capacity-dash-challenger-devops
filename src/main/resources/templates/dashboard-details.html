@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="halloween">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes do Departamento - Mottu</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="p-8">
+<main class="container mx-auto max-w-6xl p-8 rounded-lg shadow-xl">
+    <a href="/dashboard" class="btn btn-ghost mb-6">← Voltar para a Dashboard</a>
+
+    <h1 class="text-4xl font-bold text-center mb-2" th:text="${department.name}">Nome do Departamento</h1>
+    <p class="text-center text-gray-400 mb-8" th:text="${department.description}">Descrição do Departamento</p>
+
+    <div class="mb-8">
+        <div class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span class="text-xl font-bold">Alertas Ativos</span>
+        </div>
+
+        <div th:each="alert : ${allAlerts}" th:if="${alert.department.id == department.id}">
+            <div class="alert alert-warning mt-4">
+                <p class="font-bold">Alerta!</p>
+                <p th:text="${alert.message}"></p>
+                <p th:text="'Nível: ' + ${alert.levelAlert}"></p>
+                <p th:text="'Data/Hora: ' + ${#temporals.format(alert.dateTimeAlert, 'dd-MM-yyyy HH:mm:ss')}"></p>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(department.alerts)}" class="alert alert-info mt-4">
+            <p>Nenhum alerta encontrado para este departamento.</p>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">Mapa de Vagas</h2>
+        <div class="flex items-center space-x-4 mb-4">
+            <div class="w-4 h-4 bg-success rounded-full"></div>
+            <span>Livre</span>
+            <div class="w-4 h-4 bg-error rounded-full ml-4"></div>
+            <span>Ocupada</span>
+        </div>
+
+        <div class="flex flex-wrap gap-4">
+            <div th:each="parking : ${allParkingSpaces}"
+                 th:if="${parking.department.id == department.id}"
+                 th:classappend="${parking.occupied} ? 'bg-red-500' : 'bg-green-500'"
+                 class="flex flex-col justify-center items-center w-24 h-24 rounded-lg text-white shadow-md">
+
+                <p class="font-bold text-lg" th:text="${parking.code}"></p>
+                <p class="text-sm" th:text="${parking.occupied} ? ${parking.getMotorcycle().plate} : ''"></p>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

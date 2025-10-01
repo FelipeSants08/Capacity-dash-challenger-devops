@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" data-theme="halloween">
+<head>
+    <meta charset="UTF-8">
+    <title>Todas as Motocicletas</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="p-8">
+<div class="navbar bg-base-100 rounded-lg shadow-lg mb-6">
+    <div class="flex-1">
+        <a class="btn btn-ghost text-xl" th:href="@{/dashboard}">🏍️ Dashboard Mottu</a>
+    </div>
+    <div class="flex-none gap-4">
+        <!-- Informações do Usuário -->
+        <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                <div class="w-10 rounded-full">
+                    <img th:if="${#authentication.principal.attributes.picture}"
+                         th:src="${#authentication.principal.attributes.picture}"
+                         alt="Foto do usuário" />
+                    <div th:unless="${#authentication.principal.attributes.picture}"
+                         class="bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center">
+                        <span th:text="${#authentication.principal.attributes.name?.substring(0,1)}">U</span>
+                    </div>
+                </div>
+            </div>
+            <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                <li>
+                    <div class="flex flex-col p-2">
+                        <span class="font-bold" th:text="${#authentication.principal.attributes.name}">Nome do Usuário</span>
+                        <span class="text-sm text-gray-500" th:text="${#authentication.principal.attributes.email}">email@exemplo.com</span>
+                    </div>
+                </li>
+                <li><hr class="my-1"></li>
+                <li>
+                    <a th:href="@{/logout}" class="text-error font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Sair
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Badge de Role -->
+        <div class="hidden md:flex items-center">
+            <div sec:authorize="hasAuthority('ROLE_ADMIN')" class="badge badge-primary badge-lg">ADMIN</div>
+            <div sec:authorize="hasAuthority('ROLE_USER') && !hasAuthority('ROLE_ADMIN')" class="badge badge-secondary badge-lg">USER</div>
+        </div>
+    </div>
+</div>
+<main class="container mx-auto max-w-6xl p-8 rounded-lg shadow-xl">
+    <a href="/dashboard" class="btn btn-ghost mb-6">← Voltar para a Dashboard</a>
+
+    <h1 class="text-4xl font-bold text-center mb-10">Todas as Motocicletas</h1>
+
+    <!-- ... alerts permanecem iguais ... -->
+
+    <div class="flex justify-between items-center mb-10">
+        <form id="searchForm" class="flex gap-4">
+            <input type="text" id="motorcycleId" placeholder="Buscar moto por Placa" class="input input-bordered w-full max-w-xs" required min="1" />
+            <button type="submit" class="btn btn-secondary">Buscar Moto</button>
+        </form>
+
+        <!-- 👇 APENAS ADMIN pode ver este botão -->
+        <div sec:authorize="hasAuthority('ROLE_ADMIN')" class="flex gap-4">
+            <a th:href="@{/moto/form}" class="btn btn-primary">
+                Cadastrar Nova Moto
+            </a>
+        </div>
+    </div>
+
+    <div th:unless="${motorcycles.isEmpty()}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div th:each="moto : ${motorcycles}" class="card w-full bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-2xl" th:text="${moto.model}">Modelo da Moto</h2>
+                <div class="divider"></div>
+
+                <p class="text-lg">
+                    <span class="font-bold">Placa:</span> <span th:text="${moto.plate}"></span>
+                </p>
+                <p class="text-lg">
+                    <span class="font-bold">Cor:</span> <span th:text="${moto.color}"></span>
+                </p>
+
+                <!-- ... informações de localização permanecem iguais ... -->
+
+                <div class="card-actions justify-end mt-4">
+                    <a th:href="@{'/dashboard/moto/' + ${moto.plate}}" class="btn btn-primary btn-sm">Ver Detalhes</a>
+
+                    <!-- 👇 APENAS ADMIN pode ver o botão de deletar -->
+                    <div sec:authorize="hasAuthority('ROLE_ADMIN')">
+                        <form th:action="@{'/dashboard/moto/' + ${moto.idMotorcycle}}" th:method="POST" onsubmit="return confirm('Tem certeza que deseja deletar esta motocicleta?');">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn btn-error btn-sm">Deletar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var id = document.getElementById('motorcycleId').value;
+        if (id) {
+            window.location.href = '/dashboard/moto/' + id;
+        }
+    });
+</script>
+</body>
+</html>

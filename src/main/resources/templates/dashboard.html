@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" data-theme="halloween">
+<head>
+    <meta charset="UTF-8">
+    <title>DashBoard Mottu</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="p-4">
+<!-- NAVBAR -->
+<div class="navbar bg-base-100 rounded-lg shadow-lg mb-6">
+    <div class="flex-1">
+        <a class="btn btn-ghost text-xl" th:href="@{/dashboard}">🏍️ Dashboard Mottu</a>
+    </div>
+    <div class="flex-none gap-4">
+        <!-- Informações do Usuário -->
+        <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                <div class="w-10 rounded-full">
+                    <img th:if="${#authentication.principal.attributes.picture}"
+                         th:src="${#authentication.principal.attributes.picture}"
+                         alt="Foto do usuário" />
+                    <div th:unless="${#authentication.principal.attributes.picture}"
+                         class="bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center">
+                        <span th:text="${#authentication.principal.attributes.name?.substring(0,1)}">U</span>
+                    </div>
+                </div>
+            </div>
+            <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                <li>
+                    <div class="flex flex-col p-2">
+                        <span class="font-bold" th:text="${#authentication.principal.attributes.name}">Nome do Usuário</span>
+                        <span class="text-sm text-gray-500" th:text="${#authentication.principal.attributes.email}">email@exemplo.com</span>
+                    </div>
+                </li>
+                <li><hr class="my-1"></li>
+                <li>
+                    <a th:href="@{/logout}" class="text-error font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Sair
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Badge de Role -->
+        <div class="hidden md:flex items-center">
+            <div sec:authorize="hasAuthority('ROLE_ADMIN')" class="badge badge-primary badge-lg">ADMIN</div>
+            <div sec:authorize="hasAuthority('ROLE_USER') && !hasAuthority('ROLE_ADMIN')" class="badge badge-secondary badge-lg">USER</div>
+        </div>
+    </div>
+</div>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<main class="container mx-auto max-w-6xl p-8 rounded-lg shadow-xl bg-base-200">
+    <div class="flex justify-between items-center mb-10">
+        <a th:href="@{/dashboard/moto}" class="flex gap-4 btn btn-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+            </svg>
+            Ver Motos
+        </a>
+        <div class="flex gap-4">
+            <div sec:authorize="hasAuthority('ROLE_ADMIN')">
+                <a th:href="@{/movement/form}" class="btn btn-neutral">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Registrar Movimento
+                </a>
+            </div>
+
+            <div sec:authorize="hasAuthority('ROLE_ADMIN')">
+                <a th:href="@{/moto/form}" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Cadastrar Nova Moto
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resto do seu conteúdo permanece igual -->
+    <div th:if="${message}" class="alert alert-success shadow-lg mb-6">
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span th:text="${message}"></span>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error shadow-lg mb-6">
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span th:text="${error}"></span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Seus cards de departamento aqui -->
+        <div th:each="department : ${departments}" class="card w-full bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 th:text="${department.name}" class="card-title text-2xl">Nome do Departamento</h2>
+                <p th:text="${department.description}">Descrição</p>
+
+                <div th:with="activeCount=${activeAlertsCount.get(department.id)}">
+                    <div th:if="${activeCount > 0}" class="alert alert-error mb-4">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span>Alertas Ativos:<span th:text="${activeCount}" class="badge badge-lg badge-error font-normal"></span></span>
+                        </div>
+                    </div>
+                    <div th:if="${activeCount == 0}" class="alert alert-success mb-4">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span>Nenhum Alerta Ativo Encontrado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapse collapse-plus bg-base-200 mt-4">
+                    <input type="checkbox" th:id="'collapse-trigger-' + ${department.id}" />
+                    <div class="collapse-title text-xl font-medium">
+                        Ver Vagas
+                    </div>
+                    <div class="collapse-content">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-4 h-4 bg-success rounded-full"></div>
+                            <span>Livre</span>
+                            <div class="w-4 h-4 bg-error rounded-full ml-4"></div>
+                            <span>Ocupada</span>
+                        </div>
+
+                        <div class="flex flex-wrap gap-4">
+                            <div th:each="parking : ${department.parkingSpaces}"
+                                 th:classappend="${parking.occupied} ? 'badge-error' : 'badge-success'"
+                                 class="badge badge-lg text-white p-4 text-center">
+                                <p class="font-bold text-lg" th:text="${parking.code}"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <a th:href="@{'/dashboard/details/' + ${department.id}}" class="mt-4 inline-block w-full text-center px-4 py-2 btn btn-primary">
+                        Ver detalhes do Departamento
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
