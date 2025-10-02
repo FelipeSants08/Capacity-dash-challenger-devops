@@ -107,3 +107,6 @@ Cadastro de motos
 Gestão de capacidade
 
 Relatórios e dashboard
+
+📊 Script do Banco de Dados
+Ver arquivo: script_bd.sql para estrutura completa das tabelas.
